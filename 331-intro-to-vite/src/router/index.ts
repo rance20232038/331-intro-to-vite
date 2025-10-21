@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import EventListView from '../views/EventListView.vue'
+import EventListView from '@/views/EventListView.vue'
 import AboutView from '@/views/AboutView.vue'
+import StudentListView from '@/views/StudentListView.vue'  // 导入学生列表视图
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,11 +15,13 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: AboutView
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
     },
-  ],
+    {
+      path: '/students',
+      name: 'students',
+      component: StudentListView  // 添加学生路由
+    }
+  ]
 })
 
 export default router

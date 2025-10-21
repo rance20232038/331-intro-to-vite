@@ -2,17 +2,13 @@
 import EventCard from '@/components/EventCard.vue'
 import type { Event } from '@/types'
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import EventService from '@/services/EventService'  // 导入服务
 
-// 将事件列表初始化为空数组
 const events = ref<Event[]>([])
 
 onMounted(() => {
-  // 将URL替换为您的实际Mock服务器URL
-  axios
-    .get('https://my-json-server.typicode.com/rance20232038/mock-server/events')
+  EventService.getEvents()
     .then((response) => {
-      console.log('Received data:', response.data)
       events.value = response.data
     })
     .catch((error) => {

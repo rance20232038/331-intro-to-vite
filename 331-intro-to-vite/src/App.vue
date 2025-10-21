@@ -1,19 +1,14 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
   <div id="layout">
     <header>
       <div class="wrapper">
         <nav>
           <RouterLink to="/">Event</RouterLink> |
+          <RouterLink to="/students">Students</RouterLink> |  <!-- 添加学生链接 -->
           <RouterLink to="/about">About</RouterLink>
         </nav>
       </div>
     </header>
-
-
 
     <RouterView />
   </div>
