@@ -1,50 +1,28 @@
 <script setup lang="ts">
 import EventCard from '@/components/EventCard.vue'
 import type { Event } from '@/types'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-const events = ref<Event[]>([
-  {
-    id: 5928101,
-    category: 'animal welfare',
-    title: 'Cat Adoption Day',
-    description: 'Find your new feline friend at this event.',
-    location: 'Meow Town',
-    date: 'January 28, 2022',
-    time: '12:00',
-    petsAllowed: true,
-    organizer: 'Kat Laydee'
-  },
-  {
-    id: 4582797,
-    category: 'food',
-    title: 'Community Gardening',
-    description: 'Join us as we tend to the community edible plants.',
-    location: 'Flora City',
-    date: 'March 14, 2022',
-    time: '10:00',
-    petsAllowed: true,
-    organizer: 'Fern Pollin'
-  },
-  {
-    id: 8419988,
-    category: 'sustainability',
-    title: 'Beach Cleanup',
-    description: 'Help pick up trash along the shore.',
-    location: 'Playa Del Carmen',
-    date: 'July 22, 2022',
-    time: '11:00',
-    petsAllowed: false,
-    organizer: 'Carey Wales'
-  }
-])
+// 将事件列表初始化为空数组
+const events = ref<Event[]>([])
+
+onMounted(() => {
+  // 将URL替换为您的实际Mock服务器URL
+  axios
+    .get('https://my-json-server.typicode.com/rance20232038/mock-server/events')
+    .then((response) => {
+      console.log('Received data:', response.data)
+      events.value = response.data
+    })
+    .catch((error) => {
+      console.error('There was an error!', error)
+    })
+})
 </script>
 
 <template>
-
-  <!-- 添加标题 -->
   <h1>Events For Good</h1>
-
   <div class="events">
     <EventCard v-for="event in events" :key="event.id" :event="event" />
   </div>
@@ -55,5 +33,11 @@ const events = ref<Event[]>([
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #2c3e50;
 }
 </style>
