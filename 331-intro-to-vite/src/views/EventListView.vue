@@ -1,26 +1,79 @@
 <script setup lang="ts">
 import EventCard from '@/components/EventCard.vue'
-import type { Event } from '@/types'
-import { ref, onMounted } from 'vue'
-import EventService from '@/services/EventService'  // 导入服务
+import { type Event } from '@/types'
+import { ref, onMounted, computed, watchEffect } from 'vue'
+import EventService from '@/services/EventService'
+import { useRouter } from 'vue-router' // 确保导入 useRouter
 
-const events = ref<Event[]>([])
+const events = ref<Event[] | null>(null)
+const totalEvents = ref(0)
+const props = defineProps({
+  page: {
+    type: Number,
+    required: true
+  }
+})
+
+const page = computed(() => props.page)
+const hasNextPage = computed(() => {
+  const totalPages = Math.ceil(totalEvents.value / 2)
+  return page.value < totalPages
+})
+
+const router = useRouter() // 确保声明 router
 
 onMounted(() => {
-  EventService.getEvents()
-    .then((response) => {
-      events.value = response.data
-    })
-    .catch((error) => {
-      console.error('There was an error!', error)
-    })
+  watchEffect(() => {
+    events.value = null
+    EventService.getEvents(2, page.value)
+      .then((response) => {
+        events.value = response.data
+        totalEvents.value = parseInt(response.headers['x-total-count'])
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+        // 更全面的网络错误检测 - 添加在这里
+        if (!navigator.onLine ||
+          error.code === 'NETWORK_ERROR' ||
+          error.code === 'ERR_NETWORK' ||
+          error.message?.includes('Network Error') ||
+          error.message?.includes('Failed to fetch')) {
+          router.push({ name: 'network-error-view' })
+        }
+      })
+  })
 })
 </script>
-
 <template>
   <h1>Events For Good</h1>
   <div class="events">
-    <EventCard v-for="event in events" :key="event.id" :event="event" />
+    <div v-if="events && events.length > 0">
+      <EventCard v-for="event in events" :key="event.id" :event="event" />
+    </div>
+    <div v-else-if="events && events.length === 0">
+      <p>No events found.</p>
+    </div>
+    <div v-else>
+      <p>Loading events...</p>
+    </div>
+
+    <div class="pagination" v-if="events && events.length > 0">
+      <RouterLink
+        id="page-prev"
+        :to="{ name: 'event-list-view', query: { page: page - 1 } }"
+        rel="prev"
+        v-if="page != 1"
+      >&#60; Prev Page</RouterLink
+      >
+
+      <RouterLink
+        id="page-next"
+        :to="{ name: 'event-list-view', query: { page: page + 1 } }"
+        rel="next"
+        v-if="hasNextPage"
+      >Next Page &#62;</RouterLink
+      >
+    </div>
   </div>
 </template>
 
@@ -31,9 +84,23 @@ onMounted(() => {
   align-items: center;
 }
 
-h1 {
-  text-align: center;
-  margin: 20px 0;
+.pagination {
+  display: flex;
+  width: 290px;
+  margin-top: 20px;
+}
+
+.pagination a {
+  flex: 1;
+  text-decoration: none;
   color: #2c3e50;
+}
+
+#page-prev {
+  text-align: left;
+}
+
+#page-next {
+  text-align: right;
 }
 </style>
