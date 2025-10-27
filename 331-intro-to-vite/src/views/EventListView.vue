@@ -18,14 +18,13 @@ const router = useRouter()
 
 const page = computed(() => props.page)
 const hasNextPage = computed(() => {
-  const totalPages = Math.ceil(totalEvents.value / 2)
+  const totalPages = Math.ceil(totalEvents.value / 3) // 改为3
   return page.value < totalPages
 })
 
 onMounted(() => {
   watchEffect(() => {
-    events.value = null
-    EventService.getEvents(2, page.value)
+    EventService.getEvents(3, page.value) // 改为3
       .then((response) => {
         events.value = response.data
         totalEvents.value = parseInt(response.headers['x-total-count'])

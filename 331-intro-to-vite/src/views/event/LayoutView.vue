@@ -4,15 +4,22 @@ import { useEventStore } from '@/stores/event'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import type { Event } from '@/types'
+import EventService from '@/services/EventService'
 
 const route = useRoute()
 const store = useEventStore()
 const { event } = storeToRefs(store)
 
-// 从路由元数据获取事件数据
-onMounted(() => {
-  if (route.meta.event) {
-    store.setEvent(route.meta.event as Event)
+// 获取事件数据
+onMounted(async () => {
+  if (route.params.id) {
+    try {
+      const id = parseInt(route.params.id as string)
+      const response = await EventService.getEvent(id)
+      store.setEvent(response.data)
+    } catch (error) {
+      console.error('Failed to fetch event:', error)
+    }
   }
 })
 </script>
