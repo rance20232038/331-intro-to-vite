@@ -1,36 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { type Event } from '@/types'
-import EventService from '@/services/EventService'
-import { useRouter } from 'vue-router'
+import { useEventStore } from '@/stores/event'
+import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
+import type { Event } from '@/types'
 
-const event = ref<Event | null>(null)
-const props = defineProps({
-  id: {
-    type: String,
-    required: true
-  }
-})
+const route = useRoute()
+const store = useEventStore()
+const { event } = storeToRefs(store)
 
-const router = useRouter()
-
+// 从路由元数据获取事件数据
 onMounted(() => {
-  EventService.getEvent(parseInt(props.id))
-    .then((response) => {
-      event.value = response.data
-    })
-    .catch((error) => {
-      if (error.response && error.response.status === 404) {
-        // 事件不存在
-        router.push({
-          name: '404-resource-view',
-          params: { resource: 'event' }
-        })
-      } else {
-        // 网络错误或其他错误
-        router.push({ name: 'network-error-view' })
-      }
-    })
+  if (route.meta.event) {
+    store.setEvent(route.meta.event as Event)
+  }
 })
 </script>
 
@@ -45,5 +28,8 @@ onMounted(() => {
       <RouterLink :to="{ name: 'event-edit-view' }">Edit</RouterLink>
     </nav>
     <RouterView :event="event" />
+  </div>
+  <div v-else>
+    <p>Loading event...</p>
   </div>
 </template>

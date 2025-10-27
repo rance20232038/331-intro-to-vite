@@ -3,7 +3,7 @@ import EventCard from '@/components/EventCard.vue'
 import { type Event } from '@/types'
 import { ref, onMounted, computed, watchEffect } from 'vue'
 import EventService from '@/services/EventService'
-import { useRouter } from 'vue-router' // 确保导入 useRouter
+import { useRouter } from 'vue-router'
 
 const events = ref<Event[] | null>(null)
 const totalEvents = ref(0)
@@ -14,13 +14,13 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
+
 const page = computed(() => props.page)
 const hasNextPage = computed(() => {
   const totalPages = Math.ceil(totalEvents.value / 2)
   return page.value < totalPages
 })
-
-const router = useRouter() // 确保声明 router
 
 onMounted(() => {
   watchEffect(() => {
@@ -32,7 +32,6 @@ onMounted(() => {
       })
       .catch((error) => {
         console.error('There was an error!', error)
-        // 更全面的网络错误检测 - 添加在这里
         if (!navigator.onLine ||
           error.code === 'NETWORK_ERROR' ||
           error.code === 'ERR_NETWORK' ||
@@ -44,6 +43,7 @@ onMounted(() => {
   })
 })
 </script>
+
 <template>
   <h1>Events For Good</h1>
   <div class="events">

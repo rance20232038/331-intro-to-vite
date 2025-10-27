@@ -7,6 +7,8 @@ import EventRegisterView from '@/views/event/RegisterView.vue'
 import EventEditView from '@/views/event/EditView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NetworkErrorView from '@/views/NetworkErrorView.vue'
+import nProgress from 'nprogress'
+import EventService from '@/services/EventService'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +24,24 @@ const router = createRouter({
       name: 'event-layout-view',
       component: EventLayoutView,
       props: true,
+      beforeEnter: async (to) => {
+        const id = parseInt(to.params.id as string)
+        try {
+          const response = await EventService.getEvent(id)
+          // 将数据传递给组件
+          to.meta.event = response.data
+          return true
+        } catch (error: any) {
+          if (error.response && error.response.status === 404) {
+            return {
+              name: '404-resource-view',
+              params: { resource: 'event' }
+            }
+          } else {
+            return { name: 'network-error-view' }
+          }
+        }
+      },
       children: [
         {
           path: '',
@@ -65,6 +85,14 @@ const router = createRouter({
       component: NotFoundView
     }
   ]
+})
+
+router.beforeEach(() => {
+  nProgress.start()
+})
+
+router.afterEach(() => {
+  nProgress.done()
 })
 
 export default router

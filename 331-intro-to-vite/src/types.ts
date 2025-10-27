@@ -10,7 +10,6 @@ export interface Event {
   organizer: string
 }
 
-// 更新学生类型以匹配实际API数据结构
 export interface Student {
   id: number
   studentId: string
@@ -20,4 +19,12 @@ export interface Student {
   image: string
   penAmount: number
   description: string
+}
+
+export interface MessageState {
+  message: string
+}
+
+export interface EventState {
+  event: Event | null
 }

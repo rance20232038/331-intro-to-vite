@@ -1,23 +1,48 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
-import { type Event } from '@/types'
 import { useRouter } from 'vue-router'
+import { useMessageStore } from '@/stores/message'
+import type { Event } from '@/types'
 
 const props = defineProps<{
   event: Event
-  id: String
 }>()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { event } = toRefs(props)
+
 const router = useRouter()
+const messageStore = useMessageStore()
 
 const register = () => {
-  // 如果注册API调用成功，则跳回事件详情页
-  router.push({ name: 'event-detail-view' })
+  messageStore.updateMessage('You are successfully registered for ' + props.event.title)
+  setTimeout(() => {
+    messageStore.resetMessage()
+  }, 3000)
+  router.push({ name: 'event-detail-view', params: { id: props.event.id } })
 }
 </script>
 
 <template>
-  <p>Register event here</p>
-  <button @click="register">Register</button>
+  <div class="register">
+    <h1>Register for {{ event.title }}</h1>
+    <button @click="register" class="register-btn">Register Me!</button>
+  </div>
 </template>
+
+<style scoped>
+.register {
+  text-align: center;
+  padding: 20px;
+}
+
+.register-btn {
+  background-color: #42b983;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.register-btn:hover {
+  background-color: #369b6f;
+}
+</style>

@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useMessageStore } from '@/stores/message'
+
+// 使用 message store
+const messageStore = useMessageStore()
 </script>
 
 <template>
   <div id="layout">
     <header>
+      <div id="flashMessage" v-if="messageStore.message">
+        <h4>{{ messageStore.message }}</h4>
+      </div>
       <div class="wrapper">
         <nav>
-          <RouterLink :to="{ name: 'event-list-view' }">Event</RouterLink> |
-          <RouterLink :to="{ name: 'about' }">About</RouterLink>
+          <RouterLink to="/">Event</RouterLink> |
+          <RouterLink to="/students">Students</RouterLink> |
+          <RouterLink to="/about">About</RouterLink>
         </nav>
       </div>
     </header>
@@ -41,5 +49,20 @@ nav a.router-link-exact-active {
 
 h2 {
   font-size: 20px;
+}
+
+@keyframes yellofade {
+  from {
+    background-color: yellow;
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+#flashMessage {
+  animation: yellofade 3s ease-in-out;
+  padding: 10px;
+  text-align: center;
 }
 </style>
