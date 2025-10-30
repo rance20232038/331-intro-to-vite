@@ -18,22 +18,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>Students List</h1>
-  <div class="students">
-    <StudentCard v-for="student in students" :key="student.id" :student="student" />
+  <div class="p-8 max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Students List</h1>
+    <div class="flex flex-wrap justify-center gap-6">
+      <StudentCard v-for="student in students" :key="student.id" :student="student" />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.students {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-h1 {
-  text-align: center;
-  margin: 20px 0;
-  color: #2c3e50;
-}
+/* 移除了所有自定义CSS，全部使用Tailwind CSS */
 </style>
